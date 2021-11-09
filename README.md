@@ -1,6 +1,7 @@
 # Remote Feelings: Haptic feedback for hand based control of distant robots
 
 Team: Adam Curtis, Aymeric Wang, Xinying Hu
+
 EECS 249A Embedded Systems Project Charter, Fall, 2021
 
 # Goal
