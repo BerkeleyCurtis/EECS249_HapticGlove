@@ -15,6 +15,9 @@ Read proposal here:
 
 Proof of concept:
   https://youtu.be/xi63xZFfA7c
+  
+Mechanical design progress 11/8/21
+  https://www.youtube.com/watch?v=i6c7ZHas8eI
 
 Google drive created to store data sheets, PCB footprints, and electrical schematics
   https://drive.google.com/drive/folders/19l7RhDK1MfYQ7xPeabLMP4tWHGZmVfhL?usp=sharing
