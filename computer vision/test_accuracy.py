@@ -59,39 +59,37 @@ def main():
     cTime = 0
     cap = cv2.VideoCapture(0)
     detector = handDetector()
-    i = 0
-    length_relative = -1
-    z = -1
-    average_depth = -1
     image_list = []
+    length_output = -1
     while True:
         success, img = cap.read()
         
-        h, w, c = img.shape
-        img = detector.findHands(img)
-        print("shape of img:", img.shape)
-        lmList, avr_depth = detector.findPosition(img)
-        if len(lmList) != 0:
-            x_t = lmList[8][1]
-            y_t = lmList[8][2]
-            x_i = lmList[4][1]
-            y_i = lmList[4][2]
-            # z = (lmList[8][3] + lmList[4][3]) / 2
-            base1_x = lmList[0][1]
-            base1_y = lmList[0][2]
-            base2_x = lmList[5][1]
-            base2_y = lmList[5][2]
-            cv2.circle(img,(x_t, y_t), 15, (255,0,255),cv2.FILLED)
-            cv2.circle(img,(x_i,y_i), 15, (255,0,255),cv2.FILLED)
-            length = np.sqrt((x_t - x_i) * (x_t - x_i) + (y_t - y_i) * (y_t - y_i))
-            # length_base = np.sqrt((base1_x - base2_x) * (base1_x - base2_x) + (base1_y - base2_y) * (base1_y - base2_y))
-            # length_relative = length / length_base
-            length_relative = length / avr_depth
-            print(length_relative)
+        if success:
+            img = detector.findHands(img)
+            print("shape of img:", img.shape)
+            lmList, avr_depth = detector.findPosition(img)
+            if len(lmList) != 0:
+                x_t = lmList[8][1]
+                y_t = lmList[8][2]
+                x_i = lmList[4][1]
+                y_i = lmList[4][2]
+                # z = (lmList[8][3] + lmList[4][3]) / 2
 
-        
-        cv2.putText(img, "lengt:{:.3f}".format(length_relative), (10, 120), cv2.FONT_HERSHEY_PLAIN, 3,
-                (255, 0, 255), 3)
+                cv2.circle(img,(x_t, y_t), 15, (255,0,255),cv2.FILLED)
+                cv2.circle(img,(x_i,y_i), 15, (255,0,255),cv2.FILLED)
+                length = np.sqrt((x_t - x_i) * (x_t - x_i) + (y_t - y_i) * (y_t - y_i))
+                # length_relative = length / length_base
+                length_relative = length / avr_depth
+                print(length_relative)
+                image_list.append(length_relative)
+                
+                if len(image_list) == 20:
+                    length_output = int(np.average(image_list) * 10)
+                    image_list = []
+                
+                cv2.putText(img, "lengt:{:.3f}".format(length_output), (10, 120), cv2.FONT_HERSHEY_PLAIN, 3,
+                    (255, 0, 255), 3)
+
 
 
         cTime = time.time()
@@ -105,8 +103,6 @@ def main():
         cv2.waitKey(1)
 
 
-        # add something
- 
  
 if __name__ == "__main__":
     main()
