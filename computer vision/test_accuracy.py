@@ -33,18 +33,24 @@ class handDetector():
     def findPosition(self, img, handNo=0, draw=True):
  
         lmList = []
+        z = []
+        average_depth = 0
         if self.results.multi_hand_landmarks:
             for myHand in self.results.multi_hand_landmarks:
+
+
                 for id, lm in enumerate(myHand.landmark):
                     # print(id, lm)
                     h, w, c = img.shape
-                    cx, cy = int(lm.x * w), int(lm.y * h)
+                    cx, cy, cz = int(lm.x * w), int(lm.y * h), int(lm.z * w)
                     # print(id, cx, cy)
                     lmList.append([id, cx, cy])
+                    z.append(cz)
                     # if draw:
                     #     cv2.circle(img, (cx, cy), 15, (255, 0, 255), cv2.FILLED)
+                average_depth = abs(np.sum(z) / len(z))
  
-        return lmList
+        return lmList, average_depth
 
  
  
@@ -55,18 +61,22 @@ def main():
     detector = handDetector()
     i = 0
     length_relative = -1
+    z = -1
+    average_depth = -1
+    image_list = []
     while True:
         success, img = cap.read()
         
         h, w, c = img.shape
         img = detector.findHands(img)
         print("shape of img:", img.shape)
-        lmList = detector.findPosition(img)
+        lmList, avr_depth = detector.findPosition(img)
         if len(lmList) != 0:
             x_t = lmList[8][1]
             y_t = lmList[8][2]
             x_i = lmList[4][1]
             y_i = lmList[4][2]
+            # z = (lmList[8][3] + lmList[4][3]) / 2
             base1_x = lmList[0][1]
             base1_y = lmList[0][2]
             base2_x = lmList[5][1]
@@ -74,8 +84,9 @@ def main():
             cv2.circle(img,(x_t, y_t), 15, (255,0,255),cv2.FILLED)
             cv2.circle(img,(x_i,y_i), 15, (255,0,255),cv2.FILLED)
             length = np.sqrt((x_t - x_i) * (x_t - x_i) + (y_t - y_i) * (y_t - y_i))
-            length_base = np.sqrt((base1_x - base2_x) * (base1_x - base2_x) + (base1_y - base2_y) * (base1_y - base2_y))
-            length_relative = length / length_base
+            # length_base = np.sqrt((base1_x - base2_x) * (base1_x - base2_x) + (base1_y - base2_y) * (base1_y - base2_y))
+            # length_relative = length / length_base
+            length_relative = length / avr_depth
             print(length_relative)
 
         
@@ -92,6 +103,9 @@ def main():
  
         cv2.imshow("Image", img)
         cv2.waitKey(1)
+
+
+        # add something
  
  
 if __name__ == "__main__":
