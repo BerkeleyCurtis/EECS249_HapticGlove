@@ -1,6 +1,10 @@
 import cv2
 import mediapipe as mp
 import numpy as np
+import time
+import serial
+
+arduino = serial.Serial(port='/dev/cu.usbmodem144201', baudrate=115200, timeout=1)
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -23,6 +27,7 @@ def calculate_angle(A_x, A_y, B_x, B_y, C_x, C_y):
 
 angle_list = []
 angle_output = 0
+i = 0
 cap = cv2.VideoCapture(0)
 with mp_pose.Pose(
     min_detection_confidence=0.5,
@@ -72,6 +77,14 @@ with mp_pose.Pose(
           angle_list = []
 
       print("angle:", angle_output)
+
+      if i == 20:
+        arduino.write(str(angle_output).encode())
+        time.sleep(0.5)
+        print(arduino.readline().decode('ascii'))
+        i = 0
+      i += 1
+      
 
     # Flip the image horizontally for a selfie-view display.
     # cv2.putText(image, "angle:{}".format(angle_output), (10, 120), cv2.FONT_HERSHEY_PLAIN, 3,
