@@ -40,33 +40,38 @@ with mp_pose.Pose(
     results = pose.process(image)
 
     # Draw the pose annotation on the image.
-    image.flags.writeable = True
+    # image.flags.writeable = True
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-    mp_drawing.draw_landmarks(
-        image,
-        results.pose_landmarks,
-        mp_pose.POSE_CONNECTIONS,
-        landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
+    # mp_drawing.draw_landmarks(
+    #     image,
+    #     results.pose_landmarks,
+    #     mp_pose.POSE_CONNECTIONS,
+    #     landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
     
     # calculate angles of the right arm
     landmark_list = []
-    for id, landmark in enumerate(results.pose_landmarks.landmark):
-        x, y = int(landmark.x * image_width), int(landmark.y * image_height)
-        landmark_list.append([id, x, y])
-    Rshoulder_x = landmark_list[12][0]
-    Rshoulder_y = landmark_list[12][1]
-    Relbow_x = landmark_list[14][0]
-    Relbow_y = landmark_list[14][1]
-    Rwrist_x = landmark_list[16][0]
-    Rwrist_y = landmark_list[16][1]
+    if results.pose_landmarks:
+      for id, landmark in enumerate(results.pose_landmarks.landmark):
+          x, y = int(landmark.x * image_width), int(landmark.y * image_height)
+          landmark_list.append([id, x, y])
+      Rshoulder_x = landmark_list[12][1]
+      Rshoulder_y = landmark_list[12][2]
+      Relbow_x = landmark_list[14][1]
+      Relbow_y = landmark_list[14][2]
+      Rwrist_x = landmark_list[16][1]
+      Rwrist_y = landmark_list[16][2]
 
-    angle = calculate_angle(Rshoulder_x, Rshoulder_y, Relbow_x, Relbow_y, Rwrist_x, Rwrist_y)
-    angle_list.append(angle)
-    if(len(angle_list) == 20):
-        angle_output = np.average(angle_list)
-        angle_list = []
+      cv2.circle(image, (Rshoulder_x, Rshoulder_y), 10, (0, 0, 255), cv2.FILLED)
+      cv2.circle(image, (Relbow_x, Relbow_y), 10, (0, 0, 255), cv2.FILLED)
+      cv2.circle(image, (Rwrist_x, Rwrist_y), 10, (0, 0, 255), cv2.FILLED)
 
-    print("angle:", angle_output)
+      angle = calculate_angle(Rshoulder_x, Rshoulder_y, Relbow_x, Relbow_y, Rwrist_x, Rwrist_y)
+      angle_list.append(angle)
+      if(len(angle_list) == 20):
+          angle_output = np.average(angle_list)
+          angle_list = []
+
+      print("angle:", angle_output)
 
     # Flip the image horizontally for a selfie-view display.
     # cv2.putText(image, "angle:{}".format(angle_output), (10, 120), cv2.FONT_HERSHEY_PLAIN, 3,
