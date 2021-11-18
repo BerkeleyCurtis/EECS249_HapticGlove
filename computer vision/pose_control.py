@@ -4,7 +4,7 @@ import numpy as np
 import time
 import serial
 
-arduino = serial.Serial(port='/dev/cu.usbmodem142301', baudrate=115200, timeout=1)
+#arduino = serial.Serial(port='/dev/cu.usbmodem142301', baudrate=115200, timeout=1)
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -59,18 +59,21 @@ with mp_pose.Pose(
       for id, landmark in enumerate(results.pose_landmarks.landmark):
           x, y = int(landmark.x * image_width), int(landmark.y * image_height)
           landmark_list.append([id, x, y])
-      Rpinky_x = landmark_list[12][1]
-      Rpinky_y = landmark_list[12][2]
+      Rshoulder_x = landmark_list[12][1]
+      Rshoulder_y = landmark_list[12][2]
       Relbow_x = landmark_list[14][1]
       Relbow_y = landmark_list[14][2]
       Rwrist_x = landmark_list[16][1]
       Rwrist_y = landmark_list[16][2]
 
-      cv2.circle(image, (Rpinky_x, Rpinky_y), 10, (0, 0, 255), cv2.FILLED)
+      cv2.circle(image, (Rshoulder_x, Rshoulder_y), 10, (0, 0, 255), cv2.FILLED)
       cv2.circle(image, (Relbow_x, Relbow_y), 10, (0, 0, 255), cv2.FILLED)
       cv2.circle(image, (Rwrist_x, Rwrist_y), 10, (0, 0, 255), cv2.FILLED)
 
-      angle = calculate_angle(Rpinky_x, Rpinky_y, Relbow_x, Relbow_y, Rwrist_x, Rwrist_y)
+      angle = calculate_angle(Rshoulder_x, Rshoulder_y, Relbow_x, Relbow_y, Rwrist_x, Rwrist_y)
+      print("Rshoulder:", Rshoulder_x, Rshoulder_y)
+      print("Relbow:", Relbow_x, Relbow_y)
+      print("Rwrist:", Rwrist_x, Rwrist_y)
       angle_list.append(angle)
 
       if(len(angle_list) == 5):
