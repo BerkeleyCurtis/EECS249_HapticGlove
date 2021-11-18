@@ -74,12 +74,16 @@ with mp_pose.Pose(
       cv2.circle(image, (Relbow_x, Relbow_y), 10, (0, 0, 255), cv2.FILLED)
       cv2.circle(image, (Rwrist_x, Rwrist_y), 10, (0, 0, 255), cv2.FILLED)
 
-      angle = calculate_angle(Rshoulder_x, Rshoulder_y, Relbow_x, Relbow_y, Rwrist_x, Rwrist_y)
+      if (Rshoulder_vis > 0.80 and Relbow_vis > 0.80 and Rwrist_vis > 0.80):
+        angle = calculate_angle(Rshoulder_x, Rshoulder_y, Relbow_x, Relbow_y, Rwrist_x, Rwrist_y)
+        angle_list.append(angle)
+        print("trustable data")
+      
       print("Rshoulder:", Rshoulder_x, Rshoulder_y)
       print("Relbow:", Relbow_x, Relbow_y)
       print("Rwrist:", Rwrist_x, Rwrist_y)
       print("visibility:", Rshoulder_vis, Relbow_vis, Rwrist_vis)
-      angle_list.append(angle)
+      
 
       if(len(angle_list) == 5):
           angle_output = np.average(angle_list)
