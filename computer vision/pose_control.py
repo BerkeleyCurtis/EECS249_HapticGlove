@@ -58,13 +58,17 @@ with mp_pose.Pose(
     if results.pose_landmarks:
       for id, landmark in enumerate(results.pose_landmarks.landmark):
           x, y = int(landmark.x * image_width), int(landmark.y * image_height)
-          landmark_list.append([id, x, y])
+          vis = landmark.visibility
+          landmark_list.append([id, x, y, vis])
       Rshoulder_x = landmark_list[12][1]
       Rshoulder_y = landmark_list[12][2]
+      Rshoulder_vis = landmark_list[12][3]
       Relbow_x = landmark_list[14][1]
       Relbow_y = landmark_list[14][2]
+      Relbow_vis = landmark_list[14][3]
       Rwrist_x = landmark_list[16][1]
       Rwrist_y = landmark_list[16][2]
+      Rwrist_vis = landmark_list[16][3]
 
       cv2.circle(image, (Rshoulder_x, Rshoulder_y), 10, (0, 0, 255), cv2.FILLED)
       cv2.circle(image, (Relbow_x, Relbow_y), 10, (0, 0, 255), cv2.FILLED)
@@ -74,6 +78,7 @@ with mp_pose.Pose(
       print("Rshoulder:", Rshoulder_x, Rshoulder_y)
       print("Relbow:", Relbow_x, Relbow_y)
       print("Rwrist:", Rwrist_x, Rwrist_y)
+      print("visibility:", Rshoulder_vis, Relbow_vis, Rwrist_vis)
       angle_list.append(angle)
 
       if(len(angle_list) == 5):
