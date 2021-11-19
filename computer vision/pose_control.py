@@ -26,6 +26,7 @@ def transmit_data_func():
     data_lock.acquire()
     if data_holder is not None:
       data = str(data_holder).encode()
+      _timer_takein = time.time()
       data_lock.release()
     else:
       data_lock.release()
@@ -36,8 +37,9 @@ def transmit_data_func():
     # status = arduino.readline().decode('ascii')
     time.sleep(1)
     _timer_read = time.time()
-    print ("timing: acc (%.5f) write (%.5f) read (%.5f)" % (
-      (_timer_acquire - _timer_start),
+    print ("timing: takein (%.5f)acc (%.5f) write (%.5f) read (%.5f)" % (
+      (_timer_takein - _timer_start),
+      (_timer_acquire - _timer_takein),
       (_timer_write - _timer_acquire),
       (_timer_read - _timer_write),
     ))
@@ -73,6 +75,7 @@ try:
       min_detection_confidence=0.5,
       min_tracking_confidence=0.5) as pose:
     while cap.isOpened():
+      main_timer_start = time.time()
       success, image = cap.read()
       if not success:
         print("Ignoring empty camera frame.")
@@ -117,19 +120,25 @@ try:
         if (Rshoulder_vis > 0.80 and Relbow_vis > 0.80 and Rwrist_vis > 0.80):
           angle = calculate_angle(Rshoulder_x, Rshoulder_y, Relbow_x, Relbow_y, Rwrist_x, Rwrist_y)
           angle_list.append(angle)
-          print("trustable data")
-          print("Rshoulder:", Rshoulder_x, Rshoulder_y)
-          print("Relbow:", Relbow_x, Relbow_y)
-          print("Rwrist:", Rwrist_x, Rwrist_y)
-          print("visibility:", Rshoulder_vis, Relbow_vis, Rwrist_vis)
+          # print("trustable data")
+          # print("Rshoulder:", Rshoulder_x, Rshoulder_y)
+          # print("Relbow:", Relbow_x, Relbow_y)
+          # print("Rwrist:", Rwrist_x, Rwrist_y)
+          # print("visibility:", Rshoulder_vis, Relbow_vis, Rwrist_vis)
         
-
+        #main_timer_start = time.time()
         if(len(angle_list) == 5):
             angle_output = np.average(angle_list)
             angle_list = []
+            #main_timer_angle = time.time()
             data_lock.acquire()
             data_holder = angle_output
             data_lock.release()
+            print("angle:", angle_output)
+            main_timer_data = time.time()
+            print ("timing: data(%.5f)" % (
+              (main_timer_data - main_timer_start),
+            ))
 
       # Flip the image horizontally for a selfie-view display.
         cv2.putText(image, "angle:{}".format(angle_output), (10, 120), cv2.FONT_HERSHEY_PLAIN, 3,
