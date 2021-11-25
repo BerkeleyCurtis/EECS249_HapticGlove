@@ -1,0 +1,3 @@
+[submodule "ESP32_firmware_eecs249"]
+	path = ESP32_firmware_eecs249
+	url = https://github.com/aymwc16/ESP32_firmware_eecs249.git
