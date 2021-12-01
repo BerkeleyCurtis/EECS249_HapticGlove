@@ -60,18 +60,31 @@ void loop() {
   force4 = analogRead(FF4);
   force5 = analogRead(FF5);
   
-	if(force1 > 220){ 
-    j += ((force1 - 200)/20);
-	} else if (force1 < 180) {
-    j -= ((200 - force1)/20);
-	}
+//	if(force1 > 220){ 
+//    j += ((force1 - 200)/20);
+//	} else if (force1 < 180) {
+//    j -= ((200 - force1)/20);
+//	}
 
-  if(j>2000) j = 2000;
-  if(j<1000) j = 1000;
-    
-  servo1.write(j);
+//  if(j>2000) j = 2000;
+//  if(j<1000) j = 1000;
+  Serial.println("F1");
 	Serial.println(force1);
-  Serial.println(j);
-	delay(2);
+  Serial.println("F2");
+  Serial.println(force2);
+  Serial.println("F3");
+  Serial.println(force3);
+  Serial.println("F4");
+  Serial.println(force4);
+  Serial.println("F5");
+  Serial.println(force5);
+  //Serial.println(j);
+	delay(200);
+
+  servo1.write(1500);
+  servo2.write(1500);
+  servo3.write(1500);
+  servo4.write(1500);
+  servo5.write(1500);
 
 }
