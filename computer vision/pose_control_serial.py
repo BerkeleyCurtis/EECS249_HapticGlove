@@ -4,11 +4,19 @@ import numpy as np
 import time
 import serial
 
-arduino = serial.Serial(port='/dev/cu.usbmodem144201', baudrate=115200, timeout=1)
+arduino = serial.Serial(port='/dev/cu.usbmodem144101', baudrate=144101, timeout=.1)
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_pose = mp.solutions.pose
+
+
+def write_read(x):
+    arduino.write(bytes(x, 'utf-8'))
+    
+    #time.sleep(0.05)
+    data = arduino.readline()
+    return data
 
 
 def calculate_angle(A_x, A_y, B_x, B_y, C_x, C_y):
@@ -27,6 +35,13 @@ def calculate_angle(A_x, A_y, B_x, B_y, C_x, C_y):
 
 angle_list = []
 angle_output = 0
+
+back = None
+num = str(0)+ "\n"
+pre_num = 0
+back =  write_read(num)
+time.sleep(1)
+
 cap = cv2.VideoCapture(0)
 with mp_pose.Pose(
     min_detection_confidence=0.5,
@@ -73,19 +88,33 @@ with mp_pose.Pose(
       cv2.circle(image, (Relbow_x, Relbow_y), 10, (0, 0, 255), cv2.FILLED)
       cv2.circle(image, (Rwrist_x, Rwrist_y), 10, (0, 0, 255), cv2.FILLED)
 
-      angle = calculate_angle(Rshoulder_x, Rshoulder_y, Relbow_x, Relbow_y, Rwrist_x, Rwrist_y)
+      if (Rshoulder_vis > 0.80 and Relbow_vis > 0.80 and Rwrist_vis > 0.80):
+        angle = calculate_angle(Rshoulder_x, Rshoulder_y, Relbow_x, Relbow_y, Rwrist_x, Rwrist_y)
     #   print("Rshoulder:", Rshoulder_x, Rshoulder_y)
     #   print("Relbow:", Relbow_x, Relbow_y)
     #   print("Rwrist:", Rwrist_x, Rwrist_y)
     #   print("visibility:", Rshoulder_vis, Relbow_vis, Rwrist_vis)
-      angle_list.append(angle)
+        angle_list.append(angle)
 
       if(len(angle_list) == 5):
           angle_output = np.average(angle_list)
           angle_list = []
-          arduino.write(str(angle_output).encode())
-          time.sleep(1)
+          # arduino.write(str(angle_output).encode())
+          # time.sleep(1)
           #print(arduino.readline().decode('ascii'))
+
+          # this part works
+          if back is not None:
+            back = None
+            num = str(angle_output) + "\n"
+            back = write_read(num)
+
+          # try to smooth the movement
+          # if back is not None:
+          #   back = None
+          #   angle_diff = angle_output - pre_num
+          #   if (angle_diff > 50):
+              
 
           print("angle:", angle_output)
 

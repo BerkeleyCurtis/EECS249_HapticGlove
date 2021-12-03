@@ -21,8 +21,8 @@ Google drive created to store data sheets, PCB footprints, and electrical schema
 Proof of concept using binary force sensor (button):
   https://youtu.be/xi63xZFfA7c
   
-Mechanical design progress 11/8/21
-  https://www.youtube.com/watch?v=i6c7ZHas8eI
+Mechanical design progress 11/28/21
+  https://youtu.be/AOu4sZbRE6k
 
 Compatibility of IMU-6050 with ESP32-WROOM devkit:
   https://youtu.be/o_1ZEr1TlZA
