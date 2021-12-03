@@ -11,13 +11,14 @@ data_lock = threading.Lock()
 data_holder = None
 stop_threads = False
 
-arduino = serial.Serial(port='/dev/cu.usbmodem144201', baudrate=115200, timeout=1)
+arduino = serial.Serial(port='/dev/cu.usbmodem144101', baudrate=115200, timeout=None)
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_pose = mp.solutions.pose
 
 def transmit_data_func():
+  print("thread started")
   while True:
     if stop_threads:
       print ('* Received keyboard interrupt, quitting threads.')
@@ -32,10 +33,13 @@ def transmit_data_func():
       data_lock.release()
       continue
     _timer_acquire = time.time()
-    arduino.write(data)    
+
+    arduino.write(data)  
+    time.sleep(1)  
     _timer_write = time.time()
     # status = arduino.readline().decode('ascii')
-    time.sleep(1)
+    # print(status)
+    
     _timer_read = time.time()
     print ("timing: takein (%.5f)acc (%.5f) write (%.5f) read (%.5f)" % (
       (_timer_takein - _timer_start),
