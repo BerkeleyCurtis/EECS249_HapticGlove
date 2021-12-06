@@ -23,6 +23,9 @@ Proof of concept using binary force sensor (button):
   
 Mechanical design progress 11/28/21
   https://youtu.be/AOu4sZbRE6k
+  
+Demo video 12/6/21
+  https://youtu.be/in5oQGXA3p0
 
 Compatibility of IMU-6050 with ESP32-WROOM devkit:
   https://youtu.be/o_1ZEr1TlZA
