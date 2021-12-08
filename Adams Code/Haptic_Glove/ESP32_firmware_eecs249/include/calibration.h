@@ -31,10 +31,7 @@
  * * * * * * * * * * * * * * * * * * * * * */
 
 # define medium (int(MAX_PULSE_WIDTH+MIN_PULSE_WIDTH)/2)
-<<<<<<< HEAD
 # define samples 50
-=======
->>>>>>> a3909edc40921542d464333fe33da864d1b510da
 
 void setupServos();
 void driveServos();
@@ -94,50 +91,6 @@ void calibration(){
         //calibrationTracker++;
     }
 }
-
-
-
-// void calibration(){
-//     Serial.println("Loose your hand...");
-//     delay(1500);
-
-//     for(int i = 0; i < numOfFingers; i++){
-//         sPos[i] = medium;
-//     }
-//     driveServos();
-
-//     for (int i=0; i < samples; i++){
-//         for(unsigned int a = 0; a<numOfFingers; a++){
-//             delay(2);
-//             int force = analogRead(FFPins[a]);
-//             restForce[a] += force;
-//             Serial.println(String("ADC of ")+String(Fingers[a])+String(":\t")+String(force));
-//         }
-//         delay(50);
-//     }
-//     for(unsigned int a = 0; a < numOfFingers; a++){
-//         restForce[a] = restForce[a]/samples;
-//         Serial.println(restForce[a]);
-//     }
-    
-//     Serial.println("GENTLY clench...");
-//     delay(1000);
-
-//     for (int i=0; i < samples; i++){
-//         for(unsigned int a = 0; a < numOfFingers; a++){
-//             delay(2);
-//             int force = analogRead(FFPins[a]);
-//             clenchForce[a] += force;
-//             Serial.println(String("ADC of ")+String(Fingers[a])+String(":\t")+String(force));
-//         }
-//         delay(100);
-//     }
-//     for(unsigned int a = 0; a < numOfFingers; a++){
-//         clenchForce[a] = clenchForce[a]/samples;
-//         Serial.println(clenchForce[a]);
-//     }
-
-// }
 
 void calcForceRange(){
     for (int i = 0; i < numOfFingers; i++){

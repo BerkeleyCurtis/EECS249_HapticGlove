@@ -11,10 +11,12 @@
 #include "sender.h"
 #include "reciever.h"
 #include "MotionFuncs.h"
+#include "MovingAvg.h"
+
+#define BUFFER_DERIVATIVE 100
 
 int state = 'b'; //waiting
 int lastState = 'b'; //waiting
-int listSize = 100;
 
 #define MAXFORCE 3000
 
@@ -37,15 +39,47 @@ bool calibrated = false;
 
 void robotControl(){
   Pos_offset = 5 + scaleFactor(); //Get force from robot and scales it
-  //followFingers();
   followFingersAverage();
   send_control(averageFingerPos());
 }
 
+void controller();
+
+void setup() {
+	Serial.begin(115200);
+  Serial2.begin(115200, SERIAL_8N1,RXp2,TXp2);
+  
+  for(int i = 0; i < 5; i++){
+    construct_moving_average(BUFFER_DERIVATIVE,avg_force[i]);
+  }
+  for(int j = 0; j < BUFFER_DERIVATIVE; j++){
+    for(int i = 0; i < 5; i++){
+      forceAverage[i] = update_moving_average_value(avg_force[i], analogRead(FFPins[i]));
+    }
+  }
+  setupServos();
+  delay(200);
+  calibrateForceZero();
+  delay(1000);
+}
+
+void loop() {
+
+  if (Serial.available() > 0) {
+    state = Serial.read();
+  }
+  controller();
+
+  for(int i = 0; i < 5; i++){
+    forceAverage[i] = update_moving_average_value(avg_force[i], analogRead(FFPins[i]));
+  }
+}
+
+
 void controller() {
   switch(state) {
     
-    case 'a' : { // STOP!!
+    case 'a' : { // Stands for PANIC!! STOP!!
       disableServos();
       state = 'b';
       Serial.println("Stopped");
@@ -149,80 +183,4 @@ void controller() {
       state = 'a';
     }
   }
-}
-
-void setup() {
-	Serial.begin(115200);
-  Serial2.begin(115200, SERIAL_8N1,RXp2,TXp2);
-  
-  for(int i = 0; i < 5; i++){
-    avg_force[i] = construct_moving_average(listSize);
-  }
-<<<<<<< HEAD
-  for(int j = 0; j < listSize; j++){
-    for(int i = 0; i < 5; i++){
-      forceAverage[i] = update_moving_average_value(avg_force[i], analogRead(FFPins[i]));
-    }
-=======
-
-  /***** DO NOT REMOVE THIS *****
-  calibrated = confirmation(calibrated);
-  if (calibrated){
-    calibration();
->>>>>>> a3909edc40921542d464333fe33da864d1b510da
-  }
-  setupServos();
-  delay(200);
-  calibrateForceZero();
-  delay(1000);
-}
-
-<<<<<<< HEAD
-void loop() {
-
-  if (Serial.available() > 0) {
-    state = Serial.read();
-  }
-  controller();
-  // force_message_reciever();
-
-  for(int i = 0; i < 5; i++){
-    forceAverage[i] = update_moving_average_value(avg_force[i], analogRead(FFPins[i]));
-=======
-
-
-void loop() {
-  int may_the_force_bwu;
-  long int local_force;
-
-  if (PLATFORM == 2){
-    for (unsigned int a = 0; a<5; a++){
-      local_force += analogRead(FFPins[a]);
-    }
-    local_force = int(local_force/5);
-  } 
-  else{
-    local_force = analogRead(FF1);
->>>>>>> a3909edc40921542d464333fe33da864d1b510da
-  }
-  // Serial.println(forceAverage[0]);
-
-<<<<<<< HEAD
-  // Serial.print("Averaged ");
-  // Serial.println(forceAverage[2]);
-  // Serial.println("");
-  // Serial.print("NOT ");
-  // Serial.println(analogRead(FFPins[2]));
-  // delay(100);
-
-  // followFingers();
-  // driveServos();
-  // readForce();
-  // printForce();
-=======
-  force_send(local_force);
-  may_the_force_bwu = force_message_reciever();
-  Serial.println();
-  delay(500);
->>>>>>> a3909edc40921542d464333fe33da864d1b510da
 }

@@ -7,18 +7,8 @@
 #ifndef PIN_CONFIG_H
 #define PIN_CONFIG_H
 
-<<<<<<< HEAD
-
-
 #define RXp2 16
 #define TXp2 17
-
-=======
-#define INSTANCE 1
-
-#define RXp2 16
-#define TXp2 17
->>>>>>> a3909edc40921542d464333fe33da864d1b510da
 
 #define FF1 36
 #define FF2 39

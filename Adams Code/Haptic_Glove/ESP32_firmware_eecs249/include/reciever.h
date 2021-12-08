@@ -8,68 +8,31 @@
 #include <Wire.h>
 #include <string.h>
 
-<<<<<<< HEAD
+#define MAX_TRANSM_DELAY 5000
+#define WAITING_DELAY 5000
+
 
 int force_message_reciever(){
     //Serial.println("Listening to force messages...");
-=======
-#define MAX_TRANSM_DELAY 2000
-
-/** * * * * * * * * * * * * * * * * * *
- * @brief Sample code for setup() and loop()
- * 
- * @setup 
- * void setup() {
- *  Serial.begin(115200);
- *  Serial2.begin(115200, SERIAL_8N1,RXp2,TXp2);
- * }
- * 
- * @loop
- * void loop() {
- *  int may_the_force_bwu;
- *  may_the_force_bwu = force_message_reciever();
- *  delay(500);
- * * * * * * * * * * * * * * * * * * * * */
-
-
-int force_message_reciever(){
-    Serial.println("Listening to force messages...");
->>>>>>> a3909edc40921542d464333fe33da864d1b510da
     char force_message[10];
     char character;
     char msg_delimiter_init[] = "<";
     char msg_delimiter_end[] = ">";
     int i = 0;
-<<<<<<< HEAD
     int robotForce = 0;
-    //int time;
-    //int timer_init = millis();
-    // while (!Serial2.available()){
-    //     Serial.println("Waiting for signal...");
-    //     time = millis();
-    //     if ((time-timer_init)>MAX_TRANSM_DELAY){
-    //         Serial.println("No signal recieved... Check connectivity");
-    //         return 0;
-    //     }
-    //     delay(250);
-    // }
-
-//---- Consider using while(Serial2.read() != msg_delimiter_end) ??? --------
-
-=======
-    int sPos5 = 0;
     int time;
     int timer_init = millis();
     while (!Serial2.available()){
-        Serial.println("Waiting for signal...");
         time = millis();
+        if ((time-timer_init)%WAITING_DELAY<WAITING_DELAY){
+            Serial.println("Waiting for signal...");
+        }
         if ((time-timer_init)>MAX_TRANSM_DELAY){
             Serial.println("No signal recieved... Check connectivity");
             return 0;
         }
-        delay(250);
     }
->>>>>>> a3909edc40921542d464333fe33da864d1b510da
+
     while (Serial2.available()>0 && i<10){
         character = Serial2.read();
         if (character == msg_delimiter_init[0]){
@@ -84,7 +47,6 @@ int force_message_reciever(){
             i++;
         }
     }
-<<<<<<< HEAD
     robotForce = atoi(force_message);
     //Serial.println(String("Force recieved:\t")+String(robotForce));
     return(robotForce);
@@ -93,11 +55,6 @@ int force_message_reciever(){
 int scaleFactor(void){
     int scale = 20;
     return (force_message_reciever() / scale);
-=======
-    sPos5 = atoi(force_message);
-    Serial.println(String("Force recieved:\t")+String(sPos5));
-    return(sPos5);
->>>>>>> a3909edc40921542d464333fe33da864d1b510da
 }
 
 

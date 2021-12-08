@@ -1,3 +1,6 @@
+#ifndef MOTION_FUNCS_H
+#define MOTION_FUNCS_H
+
 #include <Arduino.h>
 #include <ESP32Servo.h>
 #include "calibration.h"
@@ -150,3 +153,5 @@ void followFingersAverage(void){
 //   }
 //   return 0;
 // }
+
+#endif
