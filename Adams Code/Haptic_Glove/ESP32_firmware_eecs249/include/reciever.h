@@ -8,9 +8,6 @@
 #include <Wire.h>
 #include <string.h>
 
-#define MAX_TRANSM_DELAY 5000
-#define WAITING_DELAY 5000
-
 
 int force_message_reciever(){
     //Serial.println("Listening to force messages...");
@@ -20,18 +17,19 @@ int force_message_reciever(){
     char msg_delimiter_end[] = ">";
     int i = 0;
     int robotForce = 0;
-    int time;
-    int timer_init = millis();
-    while (!Serial2.available()){
-        time = millis();
-        if ((time-timer_init)%WAITING_DELAY<WAITING_DELAY){
-            Serial.println("Waiting for signal...");
-        }
-        if ((time-timer_init)>MAX_TRANSM_DELAY){
-            Serial.println("No signal recieved... Check connectivity");
-            return 0;
-        }
-    }
+    //int time;
+    //int timer_init = millis();
+    // while (!Serial2.available()){
+    //     Serial.println("Waiting for signal...");
+    //     time = millis();
+    //     if ((time-timer_init)>MAX_TRANSM_DELAY){
+    //         Serial.println("No signal recieved... Check connectivity");
+    //         return 0;
+    //     }
+    //     delay(250);
+    // }
+
+//---- Consider using while(Serial2.read() != msg_delimiter_end) ??? --------
 
     while (Serial2.available()>0 && i<10){
         character = Serial2.read();

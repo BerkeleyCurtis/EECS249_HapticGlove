@@ -11,12 +11,11 @@
 #include "sender.h"
 #include "reciever.h"
 #include "MotionFuncs.h"
-#include "MovingAvg.h"
-
-#define BUFFER_DERIVATIVE 100
+//#include "adc.h"
 
 int state = 'b'; //waiting
 int lastState = 'b'; //waiting
+int listSize = 100;
 
 #define MAXFORCE 3000
 
@@ -39,47 +38,15 @@ bool calibrated = false;
 
 void robotControl(){
   Pos_offset = 5 + scaleFactor(); //Get force from robot and scales it
+  //followFingers();
   followFingersAverage();
   send_control(averageFingerPos());
 }
 
-void controller();
-
-void setup() {
-	Serial.begin(115200);
-  Serial2.begin(115200, SERIAL_8N1,RXp2,TXp2);
-  
-  for(int i = 0; i < 5; i++){
-    construct_moving_average(BUFFER_DERIVATIVE,avg_force[i]);
-  }
-  for(int j = 0; j < BUFFER_DERIVATIVE; j++){
-    for(int i = 0; i < 5; i++){
-      forceAverage[i] = update_moving_average_value(avg_force[i], analogRead(FFPins[i]));
-    }
-  }
-  setupServos();
-  delay(200);
-  calibrateForceZero();
-  delay(1000);
-}
-
-void loop() {
-
-  if (Serial.available() > 0) {
-    state = Serial.read();
-  }
-  controller();
-
-  for(int i = 0; i < 5; i++){
-    forceAverage[i] = update_moving_average_value(avg_force[i], analogRead(FFPins[i]));
-  }
-}
-
-
 void controller() {
   switch(state) {
     
-    case 'a' : { // Stands for PANIC!! STOP!!
+    case 'a' : { // STOP!!
       disableServos();
       state = 'b';
       Serial.println("Stopped");
@@ -183,4 +150,53 @@ void controller() {
       state = 'a';
     }
   }
+}
+
+void setup() {
+	Serial.begin(115200);
+  Serial2.begin(115200, SERIAL_8N1,RXp2,TXp2);
+  
+  for(int i = 0; i < 5; i++){
+    avg_force[i] = construct_moving_average(listSize);
+  }
+  for(int j = 0; j < listSize; j++){
+    for(int i = 0; i < 5; i++){
+      forceAverage[i] = update_moving_average_value(avg_force[i], analogRead(FFPins[i]));
+    }
+  }
+
+  //---
+  pinMode(INA, OUTPUT);
+  pinMode(INB, OUTPUT);
+  pinMode(LOGOLED, OUTPUT);
+
+  setupServos();
+  delay(200);
+  calibrateForceZero();
+  delay(1000);
+}
+
+void loop() {
+
+
+  if (Serial.available() > 0) {
+    state = Serial.read();
+  }
+  controller();
+
+  for(int i = 0; i < 5; i++){
+    forceAverage[i] = update_moving_average_value(avg_force[i], analogRead(FFPins[i]));
+  }
+  // Serial.println(forceAverage[0]);
+
+  // Serial.print("Averaged ");
+  // Serial.println(forceAverage[2]);
+  // Serial.println("");
+  // Serial.print("NOT ");
+  // Serial.println(analogRead(FFPins[2]));
+  // delay(100);
+
+  // followFingers();
+  // driveServos();
+  
 }
