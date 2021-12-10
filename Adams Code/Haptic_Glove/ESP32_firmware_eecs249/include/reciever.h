@@ -8,6 +8,7 @@
 #include <Wire.h>
 #include <string.h>
 
+#define MAX_TRANSM_DELAY 1000
 
 int force_message_reciever(){
     //Serial.println("Listening to force messages...");

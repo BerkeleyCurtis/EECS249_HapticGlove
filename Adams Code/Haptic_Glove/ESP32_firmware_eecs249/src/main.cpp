@@ -182,11 +182,19 @@ void loop() {
   if (Serial.available() > 0) {
     state = Serial.read();
   }
-  controller();
 
-  for(int i = 0; i < 5; i++){
-    forceAverage[i] = update_moving_average_value(avg_force[i], analogRead(FFPins[i]));
+  if (PLATFORM == 2){
+    controller();
+    for(int i = 0; i < 5; i++){
+      forceAverage[i] = update_moving_average_value(avg_force[i], analogRead(FFPins[i]));
+    }
   }
+  else{
+    forceAverage[0] = update_moving_average_value(avg_force[0], analogRead(FFPins[0]));
+    long int local_force = forceAverage[0];
+    send_control(local_force);
+  }
+  
   // Serial.println(forceAverage[0]);
 
   // Serial.print("Averaged ");
