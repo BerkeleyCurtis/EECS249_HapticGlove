@@ -11,6 +11,7 @@ void setup() {
   Serial.begin(115200);
   Serial.setTimeout(1);
   pinMode(LED_BUILTIN, OUTPUT);
+  myservo.write(90);
 }
 
 void loop() {

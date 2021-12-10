@@ -40,7 +40,7 @@ back = None
 num = str(0)+ "\n"
 pre_num = 0
 back =  write_read(num)
-time.sleep(1)
+time.sleep(0.5)
 
 cap = cv2.VideoCapture(0)
 with mp_pose.Pose(

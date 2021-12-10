@@ -34,11 +34,10 @@ def transmit_data_func():
       continue
     _timer_acquire = time.time()
 
-    arduino.write(data)  
-    time.sleep(1)  
+    arduino.write(data)
+    time.sleep(0.03)  # for Interpolation2 and Interpolation1 for loop
+
     _timer_write = time.time()
-    # status = arduino.readline().decode('ascii')
-    # print(status)
     
     _timer_read = time.time()
     print ("timing: takein (%.5f)acc (%.5f) write (%.5f) read (%.5f)" % (
@@ -64,7 +63,7 @@ def calculate_angle(A_x, A_y, B_x, B_y, C_x, C_y):
 
     cosine_angle = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
     angle = np.arccos(cosine_angle)
-    angle = int(np.degrees(angle))
+    angle = 180 - int(np.degrees(angle))
 
     return angle
 
