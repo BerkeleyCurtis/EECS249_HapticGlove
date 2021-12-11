@@ -16,13 +16,9 @@
 int state = 'b'; //waiting
 int lastState = 'b'; //waiting
 int listSize = 100;
+bool calibrated = false;
 
 #define MAXFORCE 3000
-
-/* * * * * * * * * * * * * * * * * * * *
- * THIS MUST BE REMOVED AFTER TEST
- * OF UART BETWEEN PINCHER AND GLOVE!!!
- * * * * * * * * * * * * * * * * * * * */
 
 #define PLATFORM 1
 #if PLATFORM!=1 & PLATFORM!=2
@@ -34,14 +30,90 @@ int listSize = 100;
  * 2 = Glove
  * * * * * * * */
 
-bool calibrated = false;
 
 void robotControl(){
-  Pos_offset = 5 + scaleFactor(); //Get force from robot and scales it
-  //followFingers();
-  followFingersAverage();
-  send_control(averageFingerPos());
+  /**a try-catch statement allows to deal with concurrent
+   * access to UART. when that happens an error should be
+   * sent but we disregard it. It's a bit dirty but it works!
+   * */
+  try {
+    Pos_offset = 10 + scaleFactor(); //Get force from robot and scales it
+    //followFingers();
+    followFingersAverage();
+    int average_position = averageFingerPos();
+    Serial.println(String("Average position:\t")+String(average_position));
+    send_control(average_position);
+  }
+  catch(...){}
 }
+
+void controller();
+
+void setup() {
+	Serial.begin(115200);
+  Serial2.begin(115200, SERIAL_8N1,RXp2,TXp2);
+  
+  for(int i = 0; i < 5; i++){
+    avg_force[i] = construct_moving_average(listSize);
+  }
+  for(int j = 0; j < listSize; j++){
+    for(int i = 0; i < 5; i++){
+      forceAverage[i] = update_moving_average_value(avg_force[i], analogRead(FFPins[i]));
+    }
+  }
+
+  //---
+  pinMode(INA, OUTPUT);
+  pinMode(INB, OUTPUT);
+  pinMode(LOGOLED, OUTPUT);
+
+  setupServos();
+  delay(200);
+  calibrateForceZero();
+  delay(1000);
+}
+
+void loop() {
+
+
+  if (Serial.available() > 0) {
+    state = Serial.read();
+  }
+
+  if (PLATFORM == 2){
+    controller();
+    for(int i = 0; i < 5; i++){
+      forceAverage[i] = update_moving_average_value(avg_force[i], analogRead(FFPins[i]));
+    }
+  }
+  else{
+    int position_recieved = force_message_reciever();
+    if (position_recieved!=0) {
+      int adc_command = MIN_PULSE_WIDTH;
+      //double sum = ((position_recieved-1000)/1000);
+      float alpha = (MAX_PULSE_WIDTH-MIN_PULSE_WIDTH)/1000;
+      float sum = (position_recieved-1000);
+      adc_command = adc_command + int(sum*alpha);
+      Serial.println(String("Position:\t")+String(position_recieved));
+      Serial.println(String("ADC command:\t")+String(adc_command));
+      
+      if (adc_command<(1250)){
+        Servos[3].write(1250);
+      }
+      else if (adc_command>(2000)){
+        Servos[3].write(2000);
+      }
+      else {
+        Servos[3].write(adc_command);
+      }
+      
+      forceAverage[0] = update_moving_average_value(avg_force[0], analogRead(FFPins[0]));
+      long int local_force = forceAverage[0];
+      send_control(local_force);
+    }
+  }
+}
+
 
 void controller() {
   switch(state) {
@@ -65,6 +137,7 @@ void controller() {
       calibration();
       setupServos();
       delay(200);
+      calibrated = true;
       state = 'b';
       break;
     }
@@ -84,9 +157,16 @@ void controller() {
     case 'f' : { // Robot Control
      // Serial.println("controlling Robot");
       //int timer = micros();
-      robotControl();
+      if (calibrated) {
+        robotControl();
+        lastState = state;
+      }
+      else {
+        Serial.println("Calibration required to launch program");
+        delay(1000);
+        state = 'b';
+      }
       //Serial.println(micros() - timer);
-      lastState = state;
       break;
     }
     case 'p' : { // Increase Force
@@ -150,61 +230,4 @@ void controller() {
       state = 'a';
     }
   }
-}
-
-void setup() {
-	Serial.begin(115200);
-  Serial2.begin(115200, SERIAL_8N1,RXp2,TXp2);
-  
-  for(int i = 0; i < 5; i++){
-    avg_force[i] = construct_moving_average(listSize);
-  }
-  for(int j = 0; j < listSize; j++){
-    for(int i = 0; i < 5; i++){
-      forceAverage[i] = update_moving_average_value(avg_force[i], analogRead(FFPins[i]));
-    }
-  }
-
-  //---
-  pinMode(INA, OUTPUT);
-  pinMode(INB, OUTPUT);
-  pinMode(LOGOLED, OUTPUT);
-
-  setupServos();
-  delay(200);
-  calibrateForceZero();
-  delay(1000);
-}
-
-void loop() {
-
-
-  if (Serial.available() > 0) {
-    state = Serial.read();
-  }
-
-  if (PLATFORM == 2){
-    controller();
-    for(int i = 0; i < 5; i++){
-      forceAverage[i] = update_moving_average_value(avg_force[i], analogRead(FFPins[i]));
-    }
-  }
-  else{
-    forceAverage[0] = update_moving_average_value(avg_force[0], analogRead(FFPins[0]));
-    long int local_force = forceAverage[0];
-    send_control(local_force);
-  }
-  
-  // Serial.println(forceAverage[0]);
-
-  // Serial.print("Averaged ");
-  // Serial.println(forceAverage[2]);
-  // Serial.println("");
-  // Serial.print("NOT ");
-  // Serial.println(analogRead(FFPins[2]));
-  // delay(100);
-
-  // followFingers();
-  // driveServos();
-  
 }

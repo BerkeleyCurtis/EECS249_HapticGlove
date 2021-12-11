@@ -1,3 +1,6 @@
+#ifndef MOTION_FUNCS_H
+#define MOTION_FUNCS_H
+
 #include <Arduino.h>
 #include <ESP32Servo.h>
 #include "calibration.h"
@@ -9,11 +12,11 @@ MovingAverage* avg_force[5];
 float forceAverage[5];
 
 int motorTest = 0;
-
-int Pos_offset = 10;
-int Neg_offset = 10;
-// int driveSpeed[numOfFingers] = {1,1,1,1,1}; //upgrade to differnt drive speeds after finger calibration
 int driveSpeed = 1;
+
+int Pos_offset = 100;
+int Neg_offset = 100;
+// int driveSpeed[numOfFingers] = {1,1,1,1,1}; //upgrade to differnt drive speeds after finger calibration
 uint delay_time = 1000;
 bool forward[5];
 
@@ -88,10 +91,20 @@ void followFingers(void){ //Working but performance not amazing
   readForce();
   for(int i = 0; i < 5; i++){
     if(force[i] > (restForce[i] + Pos_offset)) {
-      servoPosition[i] += driveSpeed;
+      if (i==0 || i==1){
+        servoPosition[i] += driveSpeed;
+      }
+      else {
+        servoPosition[i] -= driveSpeed;
+      }
     }
     if(force[i] < (restForce[i] - Neg_offset)) {
-      servoPosition[i] -= driveSpeed;
+      if (i==0 || i==1){
+        servoPosition[i] -= driveSpeed;
+      }
+      else {
+        servoPosition[i] += driveSpeed;
+      }
     }
   }
   driveServos();
@@ -134,6 +147,7 @@ void followFingersAverage(void){
     if(forceAverage[i] < (restForce[i] - Neg_offset)) {
       servoPosition[i] -= driveSpeed;
     }
+
   }
   driveServos();
 }
@@ -225,3 +239,5 @@ digitalWrite(INA, LOW);
 //   }
 //   return 0;
 // }
+
+#endif

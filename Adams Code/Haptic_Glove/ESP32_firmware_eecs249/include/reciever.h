@@ -4,6 +4,10 @@
  * Prototype version. Author: Aymeric Wang
  */
 
+#ifndef RECIEVER_H
+#define RECIEVER_H
+
+
 #include <Arduino.h>
 #include <Wire.h>
 #include <string.h>
@@ -52,8 +56,9 @@ int force_message_reciever(){
 }
 
 int scaleFactor(void){
-    int scale = 20;
-    return (force_message_reciever() / scale);
+    int scale = 10;
+    int adc_force = force_message_reciever();
+    return (adc_force / scale);
 }
 
 
@@ -76,3 +81,5 @@ int scaleFactor(void){
 //   //delay(200);
 //   driveServos();
 // }
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef MOVING_AVG_H
+#define MOVING_AVG_H
+
 #include <Arduino.h>
 
 
@@ -40,3 +43,5 @@ static float update_moving_average_value(MovingAverage* avg, int val) {
   add_moving_average_value(avg, val);
   return get_moving_average_value(avg);
 }
+
+#endif

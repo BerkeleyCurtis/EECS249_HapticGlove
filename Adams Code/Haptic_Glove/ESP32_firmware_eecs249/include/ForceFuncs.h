@@ -1,3 +1,6 @@
+#ifndef FORCE_FUNCS_H
+#define FORCE_FUNCS_H
+
 #include <Arduino.h>
 #include "calibration.h"
 #include "pin_config.h"
@@ -44,3 +47,5 @@ void timeNewForce(){
     timer = micros() - timer;
     Serial.println(timer); 
 }
+
+#endif
