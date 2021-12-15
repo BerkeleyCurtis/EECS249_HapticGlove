@@ -1,7 +1,7 @@
 /*
  * Remote Feelings: Adam Curtis, Aymeric Wang, Xinying Hu
  * 11/30/21
- * Prototype version. Author: Aymeric Wang
+ * Prototype version. Author: Aymeric Wang with edits and additions by Adam Curtis
  */
 
 #ifndef CALIBRATION_H
@@ -33,20 +33,22 @@
 # define medium (int(MAX_PULSE_WIDTH+MIN_PULSE_WIDTH)/2)
 # define samples 50
 
-void setupServos();
-void driveServos();
+//void setupServos();
+//void driveServos();
+//int servoPosition[] = {1000, 1000, 1000, 1000, 1000};
+//Servo Servos[numOfFingers];
 
-int servoPosition[] = {1000, 1000, 1000, 1000, 1000};
 int force[numOfFingers];
 String Fingers[] = {"little", "ring", "middle", "index", "thumb"};
-Servo Servos[numOfFingers];
-long int restForce[numOfFingers];
+long int restForce[numOfFingers] = {2330,2050,2200,2063,2300};
 long int clenchForce[numOfFingers];
 int forceRange[numOfFingers];
 float forceScaler[numOfFingers];
-//----------Pins---------------
-int FFPins[] = {FF1,FF2,FF3,FF4,FF5};
-int SPins[] = {S1,S2,S3,S4,S5};
+
+int pinch[numOfFingers] = {0,1114,1506,434,1262};
+int fingerPosMin[numOfFingers] = {0,644,2131,1338,1520};
+int fingerPosMax[numOfFingers] = {0,1571,1008,234,1169};
+
 //-----------Incrementer-----------
 //int calibrationTracker = 0;
 
@@ -57,38 +59,43 @@ float scalerTuner = 200;
 
 void calibration(){
  
-    for(int calibrationTracker = 0; calibrationTracker < numOfFingers; calibrationTracker++){
-        Serial.println("Relax your hand...");
-        delay(1500);
-
-        for (int i=0; i < samples; i++){
-        
-            delay(2);
-            int force = analogRead(FFPins[calibrationTracker]);
-            restForce[calibrationTracker] += force;
-            //Serial.println(String("ADC of ")+String(Fingers[calibrationTracker])+String(":\t")+String(force));
-            delay(50);
-        }
-        restForce[calibrationTracker] = restForce[calibrationTracker]/samples;
-        Serial.println(restForce[calibrationTracker]);
+    Serial.println("Open your hand all the way please :)");
+    delay(3000);
     
-        Servos[calibrationTracker].write(medium);
-        Serial.println("GENTLY clench...");
-        delay(1000);
-
+    for(int whichFinger = 0; whichFinger < numOfFingers; whichFinger++){
         for (int i=0; i < samples; i++){
-            
-            int force = analogRead(FFPins[calibrationTracker]);
-            clenchForce[calibrationTracker] += force;
-            //Serial.println(String("ADC of ")+String(Fingers[a])+String(":\t")+String(force));
-            delay(50);
-        }
-        clenchForce[calibrationTracker] = clenchForce[calibrationTracker]/samples;
-        Serial.println(clenchForce[calibrationTracker]);
         
-        Servos[calibrationTracker].detach();
-        setupServos();
-        //calibrationTracker++;
+            int force = analogRead(FFPins[whichFinger]);
+            restForce[whichFinger] += force;
+            delay(5);
+        }
+        fingerPosMin[whichFinger] = analogRead(EncPins[whichFinger]);
+        Serial.println(fingerPosMin[whichFinger]);
+        restForce[whichFinger] = restForce[whichFinger]/samples;
+        Serial.println(restForce[whichFinger]);
+    }
+    Serial.println("Close your fist");
+    delay(3000);
+
+    for(int whichFinger = 0; whichFinger < numOfFingers; whichFinger++){
+        fingerPosMax[whichFinger] = analogRead(EncPins[whichFinger]);
+        Serial.println(fingerPosMax[whichFinger]);
+        // for (int i=0; i < samples; i++){
+            
+        //     int force = analogRead(FFPins[whichFinger]);
+        //     clenchForce[whichFinger] += force;
+        //     //Serial.println(String("ADC of ")+String(Fingers[a])+String(":\t")+String(force));
+        //     delay(5);
+        // }
+        // clenchForce[whichFinger] = clenchForce[whichFinger]/samples;
+        // Serial.println(clenchForce[whichFinger]);
+    }
+    Serial.println("Pinch index and thumb");
+    delay(3000);
+
+    for(int whichFinger = 0; whichFinger < numOfFingers; whichFinger++){
+        pinch[whichFinger] = analogRead(EncPins[whichFinger]);
+        Serial.println(pinch[whichFinger]);
     }
 }
 

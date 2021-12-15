@@ -1,18 +1,13 @@
 /*
  * Remote Feelings: Adam Curtis, Aymeric Wang, Xinying Hu
  * 11/30/21
- * Prototype version. Author: Aymeric Wang
+ * Prototype version. Author: Aymeric Wang. Edits and additions by Adam Curtis
  */
-
-#ifndef RECIEVER_H
-#define RECIEVER_H
-
 
 #include <Arduino.h>
 #include <Wire.h>
 #include <string.h>
 
-#define MAX_TRANSM_DELAY 1000
 
 int force_message_reciever(){
     //Serial.println("Listening to force messages...");
@@ -21,20 +16,8 @@ int force_message_reciever(){
     char msg_delimiter_init[] = "<";
     char msg_delimiter_end[] = ">";
     int i = 0;
-    int robotForce = 0;
-    //int time;
-    //int timer_init = millis();
-    // while (!Serial2.available()){
-    //     Serial.println("Waiting for signal...");
-    //     time = millis();
-    //     if ((time-timer_init)>MAX_TRANSM_DELAY){
-    //         Serial.println("No signal recieved... Check connectivity");
-    //         return 0;
-    //     }
-    //     delay(250);
-    // }
-
-//---- Consider using while(Serial2.read() != msg_delimiter_end) ??? --------
+    static int robotForce = 0;
+    static int robotForceTemp = 0;
 
     while (Serial2.available()>0 && i<10){
         character = Serial2.read();
@@ -49,16 +32,25 @@ int force_message_reciever(){
             force_message[i] = character;
             i++;
         }
+        while(!Serial2.available()); //wait until there is more serial data available. 
+        //Without this, sometimes the processor clears the UART buffer before all contents have arrived. 
     }
-    robotForce = atoi(force_message);
-    //Serial.println(String("Force recieved:\t")+String(robotForce));
+    robotForceTemp = atoi(force_message);
+    if (robotForceTemp == 0){
+        robotForce--;
+        if(robotForce<0)
+            robotForce = 0;
+    }
+    else
+        robotForce = robotForceTemp;
+    //Serial.println(robotForce);
     return(robotForce);
 }
 
 int scaleFactor(void){
-    int scale = 10;
-    int adc_force = force_message_reciever();
-    return (adc_force / scale);
+//This magic number works well to scale the 16 bit force value coming from the robot to the 10 bit motor driver parameter
+    int scale = 6; 
+    return (force_message_reciever() / scale);
 }
 
 
@@ -81,5 +73,3 @@ int scaleFactor(void){
 //   //delay(200);
 //   driveServos();
 // }
-
-#endif

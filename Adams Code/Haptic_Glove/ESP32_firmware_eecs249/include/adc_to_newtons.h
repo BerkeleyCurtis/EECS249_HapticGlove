@@ -4,11 +4,12 @@
  * Prototype version. Author: Aymeric Wang
  */
 
-#ifndef ADC_TO_NEWTS_H
-#define ADC_TO_NEWTS_H
+#ifndef FORCE_SENSOR_H
+#define FORCE_SENSOR_H
 
 #include <Arduino.h>
 #include <math.h>
+
 
 #define FORCE_SENSOR_PIN 36
 #define RESISTANCE 5000.00
