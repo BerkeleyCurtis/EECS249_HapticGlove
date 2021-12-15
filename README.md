@@ -4,6 +4,9 @@ Team: Adam Curtis, Aymeric Wang, Xinying Hu
 
 EECS 249A Embedded Systems Project Charter, Fall, 2021
 
+# NOTICE
+CAD models will be uploaded later. There are many dependency issues I created as I iterated through changes, and I need to clean up the models before I can share something useful. The STL files should be pretty good, but depending on your printer, you might need the models to adjust hole sizes, tolerances, etc. 
+
 # Goal
 Allow a person to interact more intimately with a remote object or an object in VR and simulation. 
 
