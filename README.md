@@ -16,6 +16,11 @@ Increase feedback response for doctors, technicians, and other hands-on professi
 Read proposal here:
   https://docs.google.com/document/d/1InBV0KvcY9xu7jmpQo8c273GXP3cm4dPCD39X7FieIE/edit?usp=sharing
 
+
+# Build your own! 
+I have started the process of writing detailed instructions on everything from setting the tollerances for your 3D printer, to board bring-up and testing, to upgrading a servo motor for direct control of the motor. 
+  https://docs.google.com/document/d/1_I2u4mtQkxo85PuG7AozAqv-uuP9EnywKLR97zJgsqo/edit#heading=h.rdw5apjw4m1u
+
 # Useful links 
 
 Google drive created to store data sheets, PCB footprints, and electrical schematics
