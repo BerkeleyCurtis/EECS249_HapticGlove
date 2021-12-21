@@ -20,6 +20,9 @@ Read proposal here:
 # Build your own! 
 I have started the process of writing detailed instructions on everything from setting the tollerances for your 3D printer, to board bring-up and testing, to upgrading a servo motor for direct control of the motor. 
   https://docs.google.com/document/d/1_I2u4mtQkxo85PuG7AozAqv-uuP9EnywKLR97zJgsqo/edit#heading=h.rdw5apjw4m1u
+  
+Overview:
+  https://www.youtube.com/watch?v=s1meUk_pSKE
 
 # Useful links 
 
