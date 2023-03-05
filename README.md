@@ -4,6 +4,10 @@ Team: Adam Curtis, Aymeric Wang, Xinying Hu
 
 EECS 249A Embedded Systems Project Charter, Fall, 2021
 
+# CODEBASE
+https://github.com/BerkeleyCurtis/ESP32_firmware_eecs249
+Set up platformio on vscode and use the above repo as your code base. 
+
 # NOTICE
 12/26/2021 - The second version of the PCB is nearly finished. I'm working out a sponsorship deal with PCBway, and will hopefully get great prices through them. Look for a link here in the next couple weeks. https://drive.google.com/drive/folders/1jwyhd0EK1jnIPco-h1I057X4X2TIgmSV?usp=sharing
 
